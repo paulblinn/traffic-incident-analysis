@@ -5,7 +5,7 @@ own BigQuery project for further analysis and transformation.
 This query selects all the desired columns and places them into a new table. Since this dataset stores each year's data in 
 a separate table, I executed the query for each year by replacing '2015' in the FROM and CREATE TABLE statements with subsequent years. */
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2015 AS
 SELECT 
   consecutive_number AS incident_id,
@@ -47,7 +47,7 @@ FROM
 /* This query uses UNION clauses to combine all the tables created with the query above, making one table that 
 contains incident data for all the years. */
 
-CREATE OR REPLACE TABLE us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS
+CREATE TABLE us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2015
 UNION ALL
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2016
@@ -63,7 +63,7 @@ SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2020;
 /* This query creates new tables that contain data about what drivers were distracted by. Just like before, 
 I executed the query for each year by replacing '2015' in the FROM and CREATE TABLE statements with subsequent years. */
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.distract_2015 AS
 SELECT
   consecutive_number AS incident_id,
@@ -75,7 +75,7 @@ FROM
 /* This query uses UNION clauses to combine all the tables created with the query above, making one table that 
 contains driver distraction data for all the years. */  
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.distract_all AS
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.distract_2015
 UNION ALL
@@ -92,7 +92,7 @@ SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.distract_2020;
 /* This query creates new tables that contain data about how drivers were impaired. Just like before, 
 I executed the query for each year by replacing '2015' in the FROM and CREATE TABLE statements with subsequent years. */
 
-CREATE OR REPLACE TABLE 
+CREATE TABLE 
   us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_2015 AS
 SELECT
   consecutive_number AS incident_id,
@@ -104,7 +104,7 @@ FROM
 /* This query uses UNION clauses to combine all the tables created with the query above, making one table that 
 contains driver impairment data for all the years. */  
   
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_all AS
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_2015
 UNION ALL
@@ -122,7 +122,7 @@ SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_2020;
 that may have contributed to the incident. Just like before, I executed the query for each year by replacing '2015' in the 
 FROM and CREATE TABLE statements with subsequent years. */
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_2015 AS
 SELECT
   consecutive_number AS incident_id,
@@ -135,7 +135,7 @@ FROM
 /* This query uses UNION clauses to combine all the tables created with the query above, making one table that 
 contains data about the actions of non-motorists for all the years. */  
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all AS
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_2015
 UNION ALL
@@ -152,7 +152,7 @@ SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_2020;
 /* This query creates new tables that contain data about the obstacles drivers attempted to avoid. Just like before, 
 I executed the query for each year by replacing '2015' in the FROM and CREATE TABLE statements with subsequent years. */
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_2015 AS
 SELECT
   consecutive_number AS incident_id,
@@ -164,7 +164,7 @@ FROM
 /* This query uses UNION clauses to combine all the tables created with the query above, making one table that 
 contains data about the obstacles drivers attempted to avoid for all the years. */  
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_all AS
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_2015
 UNION ALL
