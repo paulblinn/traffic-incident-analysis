@@ -565,3 +565,77 @@ WHERE
   city IS NULL OR
   county IS NULL;
 
+
+
+CREATE OR REPLACE TABLE
+  us-traffic-incidents-analysis.nhtsa_data_tables.distract_all AS
+SELECT
+  incident_id,
+  vehicle_number,
+  CASE 
+    WHEN driver_distraction IN('Not Reported','Unknown if Distracted','Reported as Unknown if Distracted',
+    'No Driver Present/Unknown if Driver present','Distraction (Distracted), Details Unknown','Other Distraction [Specify:]',
+    'Other Distraction') 
+      THEN 'Other or Unknown'
+    WHEN driver_distraction IN('Distraction/Careless','Distraction/Inattention','Inattention (Inattentive), Details Unknown') 
+      THEN 'Careless/Inattentive'
+    WHEN driver_distraction IN('While Manipulating Mobile Phone','While Manipulating Cellular Phone','Other Mobile Phone Related',
+    'Other Cellular Phone Related','While Talking or Listening to Mobile Phone','While Talking or Listening to Cellular Phone') 
+      THEN 'Cell Phone Use'
+    WHEN driver_distraction IN('Adjusting Audio Or Climate Controls','While Using Other Component/Controls Integral to Vehicle') 
+      THEN 'Adjusting Vehicle Controls'
+    ELSE driver_distraction
+  END AS driver_distraction
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.distract_all
+
+
+
+SELECT 
+  *
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.distract_all
+WHERE
+  incident_id IS NULL OR
+  vehicle_number < 1
+
+
+
+CREATE OR REPLACE TABLE
+  us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all AS
+SELECT
+  incident_id,
+  vehicle_number,
+  person_number,
+  CASE
+    WHEN non_motorist_contributing_action IN('Unknown','Reported as Unknown','Other (Specify:)') 
+      THEN 'Other or Unknown'
+    WHEN non_motorist_contributing_action IN('Riding on Wrong Side of Road') 
+      THEN 'Wrong-Way Riding or Walking'
+    WHEN non_motorist_contributing_action IN('Dash - Run, No Visual Obstruction Noted',
+    'Dart-Out - Visual Obstruction Noted','Dart-Out','Dash') 
+      THEN 'Darted Out'
+    WHEN non_motorist_contributing_action IN('Failure to Obey Traffic Signs, Signals or Officer',
+    'Passing with Insufficient Distance or Inadequate Visibility or Failing to Yield to Overtaking Vehicle',
+    'Operating in other Erratic, Reckless, Careless or Negligent Manner','Failure to Keep in Proper Lane or Running Off Road',
+    'Operating Without Required Equipment','Making Improper Entry to or Exit From Trafficway','Improper or Erratic Lane Changing',
+    'Failing to Have Lights on When Required','Improper Passing','Improper Turn/Merge','Failure to Yield Right-Of-Way') 
+      THEN 'Operating Non-Motor Vehicle Unsafely'
+    ELSE non_motorist_contributing_action
+  END AS non_motorist_contributing_action
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all
+
+
+
+SELECT
+  *
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all
+WHERE
+  incident_id IS NULL OR 
+  vehicle_number <> 0 OR 
+  person_number < 1
+
+
+
