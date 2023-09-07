@@ -424,7 +424,7 @@ SELECT
   lighting_conditions,
   weather
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
 /* After discovering duplicate categories for 'lighting_conditions', I used a CASE statement to consolidate them 
 and overwrite the table as shown below. */
@@ -461,7 +461,7 @@ SELECT
   END AS lighting_conditions,
   weather
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
 /* After discovering duplicate categories for 'weather', I used a CASE statement to consolidate them 
 and overwrite the table as shown below. */
@@ -499,7 +499,7 @@ SELECT
     ELSE weather
   END AS weather
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
 /* The query below checks for any invalid values in each of the numerical columns. After running it, no columns 
 were returned, which means there are no errors. */
@@ -517,13 +517,11 @@ WHERE
   (day_of_week NOT BETWEEN 1 AND 7) OR 
   (num_vehicles_involved < 1 ) OR 
   (number_of_fatalities < 0) OR 
-  (number_of_drunk_drivers < 0)
+  (number_of_drunk_drivers < 0);
 
 /* The query below checks for any invalid 'day_of_the_month' values depending on the month. It also accounts for 
   2020 being a leap year. After running it, no columns were returned, which means there are no errors. */
 
-SELECT
-  *
 SELECT
   *
 FROM
@@ -531,7 +529,39 @@ FROM
 WHERE
   (day_of_the_month > 30 AND month IN(4,6,9,11)) OR
   (day_of_the_month > 28 AND month = 2 AND year <> 2020) OR 
-  (day_of_the_month > 29 AND month = 2 AND year = 2020)
+  (day_of_the_month > 29 AND month = 2 AND year = 2020);
 
+/* The query below uses subqueries to return the earliest and latest date in the 'timestamp_of_crash' column to 
+ensure all timestamps are between 2017 and 2020. */
 
+SELECT
+  (
+    SELECT
+      timestamp_of_crash
+    FROM
+      us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+    ORDER BY
+      timestamp_of_crash ASC
+    LIMIT 1
+  ) AS earliest_date,
+  (
+   SELECT
+      timestamp_of_crash
+    FROM
+      us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+    ORDER BY
+      timestamp_of_crash DESC
+    LIMIT 1
+  ) AS latest_date;
+
+/* The query below checks for any null values in 'state','city', and 'county'. If there are none, no rows will be returned. */
+
+SELECT
+  *
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+WHERE
+  state IS NULL OR
+  city IS NULL OR
+  county IS NULL;
 
