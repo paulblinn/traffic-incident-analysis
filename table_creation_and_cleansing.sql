@@ -501,5 +501,37 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
 
+/* The query below checks for any invalid values in each of the numerical columns. After running it, no columns 
+were returned, which means there are no errors. */
+
+SELECT
+  *
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+WHERE
+  (hour NOT BETWEEN 0 AND 23) OR
+  (minute NOT BETWEEN 0 AND 59) OR
+  (month NOT BETWEEN 1 AND 12) OR
+  (year NOT BETWEEN 2017 AND 2020) OR 
+  (day_of_the_month NOT BETWEEN 1 AND 31) OR 
+  (day_of_week NOT BETWEEN 1 AND 7) OR 
+  (num_vehicles_involved < 1 ) OR 
+  (number_of_fatalities < 0) OR 
+  (number_of_drunk_drivers < 0)
+
+/* The query below checks for any invalid 'day_of_the_month' values depending on the month. It also accounts for 
+  2020 being a leap year. After running it, no columns were returned, which means there are no errors. */
+
+SELECT
+  *
+SELECT
+  *
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+WHERE
+  (day_of_the_month > 30 AND month IN(4,6,9,11)) OR
+  (day_of_the_month > 28 AND month = 2 AND year <> 2020) OR 
+  (day_of_the_month > 29 AND month = 2 AND year = 2020)
+
 
 
