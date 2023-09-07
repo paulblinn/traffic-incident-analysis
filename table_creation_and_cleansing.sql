@@ -386,5 +386,120 @@ Another Motor Vehicle In Transport',
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
+/* After discovering duplicate categories for 'junction_type', I used a CASE statement to consolidate them 
+and overwrite the table as shown below. */
+
+CREATE OR REPLACE TABLE
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
+SELECT
+  incident_id,
+  state,
+  county,
+  city,
+  num_vehicles_involved,
+  month,
+  day_of_the_month,
+  year,
+  day_of_week,
+  hour,
+  minute,
+  timestamp_of_crash,
+  number_of_fatalities,
+  number_of_drunk_drivers,
+  road_type,
+  population_density,
+  latitude,
+  longitude,
+  special_jurisdiction,
+  first_harmful_event,
+  collision_manner,
+  CASE
+    WHEN junction_type IN('Not Reported','Reported as Unknown') THEN 'Unknown'
+    WHEN junction_type = 'Driveway Access Related' THEN 'Driveway Access'
+    WHEN junction_type = 'Entrance/Exit Ramp Related' THEN 'Entrance/Exit Ramp'
+    WHEN junction_type = 'Intersection-Related' THEN 'Intersection'
+    ELSE junction_type
+  END AS junction_type,
+  is_work_zone,
+  lighting_conditions,
+  weather
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+
+/* After discovering duplicate categories for 'lighting_conditions', I used a CASE statement to consolidate them 
+and overwrite the table as shown below. */
+
+CREATE OR REPLACE TABLE
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
+SELECT
+  incident_id,
+  state,
+  county,
+  city,
+  num_vehicles_involved,
+  month,
+  day_of_the_month,
+  year,
+  day_of_week,
+  hour,
+  minute,
+  timestamp_of_crash,
+  number_of_fatalities,
+  number_of_drunk_drivers,
+  road_type,
+  population_density,
+  latitude,
+  longitude,
+  special_jurisdiction,
+  first_harmful_event,
+  collision_manner,
+  junction_type, 
+  is_work_zone,
+  CASE
+    WHEN lighting_conditions IN('Reported as Unknown','Not Reported','Unknown') THEN 'Other'
+    ELSE lighting_conditions
+  END AS lighting_conditions,
+  weather
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+
+/* After discovering duplicate categories for 'weather', I used a CASE statement to consolidate them 
+and overwrite the table as shown below. */
+
+CREATE OR REPLACE TABLE
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
+SELECT
+  incident_id,
+  state,
+  county,
+  city,
+  num_vehicles_involved,
+  month,
+  day_of_the_month,
+  year,
+  day_of_week,
+  hour,
+  minute,
+  timestamp_of_crash,
+  number_of_fatalities,
+  number_of_drunk_drivers,
+  road_type,
+  population_density,
+  latitude,
+  longitude,
+  special_jurisdiction,
+  first_harmful_event,
+  collision_manner,
+  junction_type, 
+  is_work_zone,
+  lighting_conditions,
+  CASE
+    WHEN weather IN('Not Reported','Unknown','Reported as Unknown') THEN 'Other'
+    WHEN weather = 'Blowing Snow' THEN 'Snow'
+    ELSE weather
+  END AS weather
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+
 
 
