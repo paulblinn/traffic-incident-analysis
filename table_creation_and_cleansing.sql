@@ -495,7 +495,7 @@ SELECT
   is_work_zone,
   lighting_conditions,
   CASE
-    WHEN weather IN('Not Reported','Unknown','Reported as Unknown') THEN 'Other'
+    WHEN weather IN('Not Reported','Reported as Unknown') THEN 'Unknown'
     WHEN weather = 'Blowing Snow' THEN 'Snow'
     ELSE weather
   END AS weather
