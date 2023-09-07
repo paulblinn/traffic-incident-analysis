@@ -276,10 +276,113 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* After running the query below, I saw that there were no more duplicate categories for 'collision_manner'. */
+/* When looking at DISTINCT values for the 'first_harmful_event' column, there were many very specific categories 
+and a few duplicates, so I decided to rewrite the table and consolidate them with a CASE statement as shown below. */
 
+CREATE OR REPLACE TABLE 
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
 SELECT
-  DISTINCT collision_manner
+  incident_id,
+  state,
+  county,
+  city,
+  num_vehicles_involved,
+  month,
+  day_of_the_month,
+  year,
+  day_of_week,
+  hour,
+  minute,
+  timestamp_of_crash,
+  number_of_fatalities,
+  number_of_drunk_drivers,
+  road_type,
+  population_density,
+  latitude,
+  longitude,
+  special_jurisdiction,
+  CASE
+    WHEN first_harmful_event IN (
+      'Motor Vehicle In-Transport',
+      'Motor Vehicle in Motion Outside the Trafficway',
+      'Railway Vehicle',
+      'Jackknife (harmful to this vehicle)',
+      'Road Vehicle on Rails',
+      'Working Motor Vehicle'
+    ) THEN 'Other Moving Vehicle'
+
+    WHEN first_harmful_event IN (
+      'Tree (Standing Only)',
+      'Shrubbery',
+      'Fence',
+      'Wall',
+      'Curb',
+      'Building',
+      'Mail Box',
+      'Utility Pole/Light Support',
+      'Guardrail Face',
+      'Guardrail End',
+      'Impact Attenuator/Crash Cushion',
+      'Concrete Traffic Barrier',
+      'Cable Barrier',
+      'Traffic Sign Support',
+      'Culvert',
+      'Bridge Pier or Support',
+      'Post, Pole or Other Supports',
+      'Bridge Rail (Includes parapet)',
+      'Traffic Signal Support',
+      'Fire Hydrant',
+      'Immersion or Partial Immersion',
+      'Other Traffic Barrier',
+      'Ground',
+      'Snow Bank',
+      'Bridge Overhead Structure',
+      'Embankment',
+      'Ditch',
+      'Parked Motor Vehicle',
+      'Other Fixed Object',
+      'Unknown Fixed Object'
+    ) THEN 'Fixed Objects Present'
+    
+    WHEN first_harmful_event IN (
+      'Unknown Object Not Fixed',
+      'Unknown',
+      'Reported as Unknown',
+      'Harmful Event, Details Not Reported',
+      'Other Non-Collision'
+    ) THEN 'Unknown or Unreported Events'
+    
+    WHEN first_harmful_event IN (
+      'Non-Motorist on Personal Conveyance',
+      'Pedestrian',
+      'Pedalcyclist',
+      'Live Animal',
+      'Ridden Animal or Animal Drawn Conveyance'
+    ) THEN 'Pedestrian/Non-Motorist Present'
+    
+    WHEN first_harmful_event IN (
+      'Cargo/Equipment Loss or Shift (harmful to this vehicle)',
+      'Cargo/Equipment Loss, Shift, or Damage [harmful]',
+      'Other Object (not fixed)',
+      'Thrown or Falling Object',
+      'Object That Had Fallen From Motor Vehicle In-Transport',
+      'Motor Vehicle In-Transport Strikes or is Struck by Cargo, Persons or Objects Set-in-Motion from/by 
+Another Motor Vehicle In Transport',
+      'Boulder'
+    ) THEN 'Unsecured Cargo/Moving Objects'
+
+    WHEN first_harmful_event IN (
+      'Injured In Vehicle (Non-Collision)',
+      'Fell/Jumped from Vehicle'
+    ) THEN 'Person Injured In/Ejected From Vehicle'
+    
+    ELSE first_harmful_event
+  END AS first_harmful_event,
+  collision_manner,
+  junction_type,
+  is_work_zone,
+  lighting_conditions,
+  weather
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
