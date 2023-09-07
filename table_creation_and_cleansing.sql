@@ -1,5 +1,5 @@
 /* The 'accident_yyyy' tables contain general information about each particular incident. 
-They are stored in the bigquery-public-data library, so I will need to create new tables within my 
+They are stored in the bigquery-public-data library, so I needed to create new tables within my 
 own BigQuery project for further analysis and transformation. 
 
 The query below selects all the desired columns and places them into a new table. Since this dataset stores each year's data in 
@@ -47,7 +47,7 @@ FROM
   
 The query below uses UNION clauses to combine all the tables created with the query above, making one table that 
 contains incident data for all four years. */
-
+  
 CREATE TABLE 
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2017
@@ -160,7 +160,8 @@ SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_2019
 UNION ALL
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_2020;
 
-
+/* I created a new duplicate table of 'accidents_all' so that I could clean and transform the data without
+modifying the original table. */
 
 CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
@@ -168,6 +169,119 @@ SELECT
   *
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all;
+
+/* To get an overview of how the data is formatted, I queried all the columns and the first 100 rows. */
+
+SELECT
+  *
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+LIMIT
+  100;
+
+/* I noticed that many of the entries for 'county' end with an identifier number in parentheses, such as 'HARRIS (201)'. 
+To remove these, I used the STRPOS function to detect columns that end with an identifier, then the SUBSTR function to 
+extract just the county name. Finally, I used a CASE statment to make sure that only the entries with the identifier were modified. 
+I used the CREATE OR REPLACE TABLE statment to replace just the 'county' column while keeping all the others the same. */
+
+CREATE OR REPLACE TABLE 
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
+SELECT
+  incident_id,
+  state,
+  CASE
+    WHEN STRPOS(county, ' (') > 0
+    THEN SUBSTR(county, 1, STRPOS(county, ' (') - 1)
+    ELSE county
+  END AS county,
+  city,
+  num_vehicles_involved,
+  month,
+  day_of_the_month,
+  year,
+  day_of_week,
+  hour,
+  minute,
+  timestamp_of_crash,
+  number_of_fatalities,
+  number_of_drunk_drivers,
+  road_type,
+  population_density,
+  latitude,
+  longitude,
+  special_jurisdiction,
+  first_harmful_event,
+  collision_manner,
+  junction_type,
+  is_work_zone,
+  lighting_conditions,
+  weather
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
+
+/* After running the query below, I saw there were no more entries with the identifier in parentheses at the end. */
+
+SELECT
+  county
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+WHERE
+  county LIKE '%(%';
+
+/* While checking for duplicates, I ran this query and discovered some duplicate categories for the 'collision_manner'. */
+
+SELECT
+  DISTINCT collision_manner
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
+
+/* To remove duplicates, I used a CASE statement to replace the duplicate categories for the 'collision_manner' with the 
+corresponding categories that I wanted to keep. I used the CREATE OR REPLACE TABLE statment to replace just the 
+'collision_manner' column while keeping all the others the same. */
+
+CREATE OR REPLACE TABLE 
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
+SELECT
+  incident_id,
+  state,
+  county,
+  city,
+  num_vehicles_involved,
+  month,
+  day_of_the_month,
+  year,
+  day_of_week,
+  hour,
+  minute,
+  timestamp_of_crash,
+  number_of_fatalities,
+  number_of_drunk_drivers,
+  road_type,
+  population_density,
+  latitude,
+  longitude,
+  special_jurisdiction,
+  first_harmful_event,
+  CASE
+    WHEN collision_manner = 'The First Harmful Event was Not a Collision with a Motor Vehicle in Transport' 
+      THEN 'Not a Collision with Motor Vehicle In-Transport'
+    WHEN collision_manner = 'Reported as Unknown' THEN 'Unknown'
+    WHEN collision_manner = 'Not Reported' THEN 'Unknown'
+    ELSE collision_manner
+  END AS collision_manner,
+  junction_type,
+  is_work_zone,
+  lighting_conditions,
+  weather
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
+
+/* After running the query below, I saw that there were no more duplicate categories for 'collision_manner'. */
+
+SELECT
+  DISTINCT collision_manner
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
 
 
