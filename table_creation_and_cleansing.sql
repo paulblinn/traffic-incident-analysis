@@ -180,9 +180,10 @@ LIMIT
   100;
 
 /* I noticed that many of the entries for 'county' end with an identifier number in parentheses, such as 'HARRIS (201)'. 
-To remove these, I used the STRPOS function to detect columns that end with an identifier, then the SUBSTR function to 
-extract just the county name. Finally, I used a CASE statment to make sure that only the entries with the identifier were modified. 
-I used the CREATE OR REPLACE TABLE statment to replace just the 'county' column while keeping all the others the same. */
+To remove these, I used the first STRPOS function to detect columns that end with an identifier, then the SUBSTR function with 
+a nested STRPOS function to extract just the county name. Finally, I used a CASE statment to make sure that only the entries 
+with the identifier were modified. I used the CREATE OR REPLACE TABLE statment to replace just the 'county' column while keeping 
+all the other columns the same. */
 
 CREATE OR REPLACE TABLE 
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
@@ -191,7 +192,7 @@ SELECT
   state,
   CASE
     WHEN STRPOS(county, ' (') > 0
-    THEN SUBSTR(county, 1, STRPOS(county, ' (') - 1)
+      THEN SUBSTR(county, 1, STRPOS(county, ' (') - 1)
     ELSE county
   END AS county,
   city,
