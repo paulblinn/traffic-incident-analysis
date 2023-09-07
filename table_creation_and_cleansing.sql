@@ -386,8 +386,8 @@ Another Motor Vehicle In Transport',
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* After discovering duplicate categories for 'junction_type', I used a CASE statement to consolidate them 
-and overwrite the table as shown below. */
+/* When looking at DISTINCT values for the 'junction_type' column, there were a few duplicates, so I decided 
+to rewrite the table and consolidate them with a CASE statement as shown below. */
 
 CREATE OR REPLACE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
@@ -426,8 +426,8 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* After discovering duplicate categories for 'lighting_conditions', I used a CASE statement to consolidate them 
-and overwrite the table as shown below. */
+/* When looking at DISTINCT values for the 'lighting_conditions' column, there were a few duplicates, so I decided 
+to rewrite the table and consolidate them with a CASE statement as shown below. */
 
 CREATE OR REPLACE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
@@ -463,8 +463,8 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* After discovering duplicate categories for 'weather', I used a CASE statement to consolidate them 
-and overwrite the table as shown below. */
+/* When looking at DISTINCT values for the 'weather' column, there were a few duplicates, so I decided 
+to rewrite the table and consolidate them with a CASE statement as shown below. */
 
 CREATE OR REPLACE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
@@ -501,8 +501,8 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* The query below checks for any invalid values in each of the numerical columns. After running it, no columns 
-were returned, which means there are no errors. */
+/* The query below checks for any invalid values in each of the numerical columns in the 'accidents_all_v2' table. 
+After running it, no columns were returned, which means there are no errors. */
 
 SELECT
   *
@@ -520,7 +520,7 @@ WHERE
   (number_of_drunk_drivers < 0);
 
 /* The query below checks for any invalid 'day_of_the_month' values depending on the month. It also accounts for 
-  2020 being a leap year. After running it, no columns were returned, which means there are no errors. */
+2020 being a leap year. After running it, no columns were returned, which means there are no errors. */
 
 SELECT
   *
@@ -554,7 +554,8 @@ SELECT
     LIMIT 1
   ) AS latest_date;
 
-/* The query below checks for any null values in 'state','city', and 'county'. If there are none, no rows will be returned. */
+/* The query below checks for any null values in 'state','city', and 'county' columns in the 'accidents_all_v2' table. 
+After running it, no columns were returned, which means there are no errors. */
 
 SELECT
   *
@@ -565,10 +566,12 @@ WHERE
   city IS NULL OR
   county IS NULL;
 
-
+/* When looking at DISTINCT values for the 'driver_distraction' column in the 'distract_all' table, there were many specific 
+categories, so I decided to consolidate them with a CASE statement as shown below and put them in a new table titled 
+'distract_all_v2' that will contain the clean data. */
 
 CREATE OR REPLACE TABLE
-  us-traffic-incidents-analysis.nhtsa_data_tables.distract_all AS
+  us-traffic-incidents-analysis.nhtsa_data_tables.distract_all_v2 AS
 SELECT
   incident_id,
   vehicle_number,
@@ -589,20 +592,23 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.distract_all
 
-
+/* The query below checks for any invalid values in the other columns within the 'distract_all_v2' table. After running it, 
+no columns were returned, which means there are no errors. */
 
 SELECT 
   *
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.distract_all
+  us-traffic-incidents-analysis.nhtsa_data_tables.distract_all_v2
 WHERE
   incident_id IS NULL OR
   vehicle_number < 1
 
-
+/* When looking at DISTINCT values for the 'non_motorist_contributing_action' column in the 'nmactions_all' table, there 
+were many specific categories, so I decided to consolidate them with a CASE statement as shown below and put them in a 
+new table titled 'nmactions_all_v2' that will contain the clean data. */
 
 CREATE OR REPLACE TABLE
-  us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all AS
+  us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all_v2 AS
 SELECT
   incident_id,
   vehicle_number,
@@ -626,16 +632,80 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all
 
-
+/* The query below checks for any invalid values in the other columns within the 'nmactions_all_v2' table. After running it, 
+no columns were returned, which means there are no errors. 
+  
+Note: A vehicle number of 0 means the person was involved in the incident, but was not in a motor vehicle. Since this table stores
+information about non-motorists' contributing actions, all rows must have a 'vehicle_number' of 0. */
 
 SELECT
   *
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all
+  us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all_v2
 WHERE
   incident_id IS NULL OR 
   vehicle_number <> 0 OR 
   person_number < 1
+
+/* When looking at DISTINCT values for the 'driver_impairment' column in the 'drimpair_all' table, there were a few 
+duplicates, so I decided to consolidate them with a CASE statement as shown below and put them in a new table titled 
+'drimpair_all_v2' that will contain the clean data. */
+
+CREATE OR REPLACE TABLE
+  us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_all_v2 AS 
+SELECT
+  incident_id,
+  vehicle_number, 
+  CASE
+    WHEN driver_impairment IN('Not Reported','Unknown if Impaired','No Driver Present/Unknown if Driver Present',
+    'Reported as Unknown if Impaired') 
+      THEN 'Unknown'
+    WHEN driver_impairment = 'Emotional (depressed, angry, disturbed, etc.)' 
+      THEN 'Emotional (depressed, angry, disturbed, etc)'
+    WHEN driver_impairment = 'Physical Impairment - No Details'
+      THEN 'Other Physical Impairment'
+    ELSE driver_impairment
+  END AS driver_impairment
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_all
+
+/* The query below checks for any invalid values in the other columns within the 'drimpair_all_v2' table. After running it, 
+no columns were returned, which means there are no errors. */
+
+SELECT
+  *
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_all_v2
+WHERE 
+  incident_id IS NULL OR
+  vehicle_number < 1
+
+/* When looking at DISTINCT values for the 'obstacle_to_avoid' column in the 'obstacles_all' table, there were a few 
+duplicates, so I decided to consolidate them with a CASE statement as shown below and put them in a new table titled 
+'obstacles_all_v2' that will contain the clean data. */
+
+CREATE OR REPLACE TABLE
+  us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_all_v2 AS 
+SELECT
+  incident_id,
+  vehicle_number, 
+  CASE
+    WHEN obstacle_to_avoid IN('Reported as Unknown','No Driver Present/Unknown if Driver present','Not Reported') THEN 'Unknown'
+    ELSE obstacle_to_avoid
+  END AS obstacle_to_avoid
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_all
+
+/* The query below checks for any invalid values in the other columns within the 'obstacles_all_v2' table. After running it, 
+no columns were returned, which means there are no errors. */
+
+SELECT
+  *
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_all_v2
+WHERE
+  incident_id IS NULL OR 
+  vehicle_number < 1
 
 
 
