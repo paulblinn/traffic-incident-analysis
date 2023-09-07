@@ -266,8 +266,8 @@ SELECT
   CASE
     WHEN collision_manner = 'The First Harmful Event was Not a Collision with a Motor Vehicle in Transport' 
       THEN 'Not a Collision with Motor Vehicle In-Transport'
-    WHEN collision_manner = 'Reported as Unknown' THEN 'Unknown'
-    WHEN collision_manner = 'Not Reported' THEN 'Unknown'
+    WHEN collision_manner IN('Reported as Unknown','Not Reported') 
+      THEN 'Unknown'
     ELSE collision_manner
   END AS collision_manner,
   junction_type,
