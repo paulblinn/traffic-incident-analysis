@@ -576,7 +576,7 @@ WHERE
   county IS NULL;
 
 /* At this point, all the data is clean and ready for analysis. I will connect to my BigQuery account within Tableau and extract 
-the tables to analyze the data. 
+my table to analyze the data. 
 
 The links to my visualizations are in the README file in this repository. */ 
 
