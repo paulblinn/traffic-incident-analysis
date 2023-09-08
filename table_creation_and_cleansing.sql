@@ -591,7 +591,7 @@ SELECT
     ELSE driver_distraction
   END AS driver_distraction
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.distract_all
+  us-traffic-incidents-analysis.nhtsa_data_tables.distract_all;
 
 /* The query below checks for any invalid values in the other columns within the 'distract_all_v2' table. After running it, 
 no columns were returned, which means there are no errors. */
@@ -602,7 +602,7 @@ FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.distract_all_v2
 WHERE
   incident_id IS NULL OR
-  vehicle_number < 1
+  vehicle_number < 1;
 
 /* When looking at DISTINCT values for the 'non_motorist_contributing_action' column in the 'nmactions_all' table, there 
 were many specific categories, so I decided to consolidate them with a CASE statement as shown below and put them in a 
@@ -631,12 +631,12 @@ SELECT
     ELSE non_motorist_contributing_action
   END AS non_motorist_contributing_action
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all
+  us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all;
 
 /* The query below checks for any invalid values in the other columns within the 'nmactions_all_v2' table. After running it, 
 no columns were returned, which means there are no errors. 
   
-Note: A vehicle number of 0 means the person was involved in the incident, but was not in a motor vehicle. Since this table stores
+Note: A 'vehicle_number' of 0 means the person was involved in the incident, but was not in a motor vehicle. Since this table stores
 information about non-motorists' contributing actions, all rows must have a 'vehicle_number' of 0. */
 
 SELECT
@@ -646,7 +646,7 @@ FROM
 WHERE
   incident_id IS NULL OR 
   vehicle_number <> 0 OR 
-  person_number < 1
+  person_number < 1;
 
 /* When looking at DISTINCT values for the 'driver_impairment' column in the 'drimpair_all' table, there were a few 
 duplicates, so I decided to consolidate them with a CASE statement as shown below and put them in a new table titled 
@@ -668,7 +668,7 @@ SELECT
     ELSE driver_impairment
   END AS driver_impairment
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_all
+  us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_all;
 
 /* The query below checks for any invalid values in the other columns within the 'drimpair_all_v2' table. After running it, 
 no columns were returned, which means there are no errors. */
@@ -679,7 +679,7 @@ FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_all_v2
 WHERE 
   incident_id IS NULL OR
-  vehicle_number < 1
+  vehicle_number < 1;
 
 /* When looking at DISTINCT values for the 'obstacle_to_avoid' column in the 'obstacles_all' table, there were a few 
 duplicates, so I decided to consolidate them with a CASE statement as shown below and put them in a new table titled 
@@ -695,7 +695,7 @@ SELECT
     ELSE obstacle_to_avoid
   END AS obstacle_to_avoid
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_all
+  us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_all;
 
 /* The query below checks for any invalid values in the other columns within the 'obstacles_all_v2' table. After running it, 
 no columns were returned, which means there are no errors. */
@@ -706,7 +706,7 @@ FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_all_v2
 WHERE
   incident_id IS NULL OR 
-  vehicle_number < 1
+  vehicle_number < 1;
 
 
 
