@@ -1,9 +1,14 @@
-/* The 'accident_yyyy' tables contain general information about each particular incident. 
-They are stored in the bigquery-public-data library, so I needed to create new tables within my 
-own BigQuery project for further analysis and transformation. 
+/* For this project, I wanted to determine how to reduce deaths from car collisions and occurrences of incidents. 
+I found a dataset published by the NHTSA in the bigquery-public-data library that contains data about vehicle 
+incidents where there was at least one death. 
 
-The query below selects all the desired columns and places them into a new table. Since this dataset stores each year's data in 
-a separate table, I executed the query for each year by replacing '2017' in the FROM and CREATE TABLE statements with subsequent years. */
+The 'accident_yyyy' tables in the dataset contain general information about each particular incident. Because they are stored in 
+a public data library, I needed to create new tables within my own BigQuery project for further analysis and transformation. 
+I chose to limit the scope of my analysis to the years 2017 through 2020 (the latest year available) for this project. 
+
+The query below selects all the columns I chose to analyze from the public tables and places them into new tables within my 
+BigQuery project. Since this dataset stores each year's data in a separate table, I executed the query for each year by 
+replacing '2017' in the FROM and CREATE TABLE statements with the subsequent years. */
 
 CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2017 AS
@@ -31,11 +36,11 @@ SELECT
   manner_of_collision_name AS collision_manner,
   relation_to_junction_specific_location_name AS junction_type,
 
-    /* The 'work_zone' column displays the type of workers present, but I only wanted to know whether or not there were 
-  any workers present at all, so I used a CASE statement to create a column showing this. */
+    /* The 'work_zone_name' column displays the type of workers present, but I only wanted to know whether or not there were 
+    any workers present at all, so I used a CASE statement to create a column showing this. */
   CASE
-    WHEN work_zone_name = 'None'THEN 'False'
-    WHEN work_zone_name = 'Work Zone, Type Unknown' OR work_zone_name IS NULL THEN 'Unknown'
+    WHEN work_zone_name = 'None' THEN 'False'
+    WHEN work_zone_name IS NULL THEN 'Unknown'
     ELSE 'True'
   END AS is_work_zone,
   light_condition_name AS lighting_conditions,
@@ -58,8 +63,9 @@ SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2019
 UNION ALL
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2020;
 
-/* The query below creates new tables that contain data about what drivers were distracted by. Just like before, 
-I executed the query for each year by replacing '2017' in the FROM and CREATE TABLE statements with subsequent years. */
+/* The query below clones the public tables into my project that contain data about what drivers were distracted by. 
+Just like before, I executed the query for each year by replacing '2017' in the FROM and CREATE TABLE statements with 
+subsequent years. */
 
 CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.distract_2017 AS
@@ -83,8 +89,9 @@ SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.distract_2019
 UNION ALL
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.distract_2020;
 
-/* The query below creates new tables that contain data about how drivers were impaired. Just like before, 
-I executed the query for each year by replacing '2017' in the FROM and CREATE TABLE statements with subsequent years. */
+/* The query below clones the public tables into my project that contain data about how drivers were impaired. 
+Just like before, I executed the query for each year by replacing '2017' in the FROM and CREATE TABLE statements 
+with subsequent years. */
 
 CREATE TABLE 
   us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_2017 AS
@@ -108,9 +115,9 @@ SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_2019
 UNION ALL
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_2020;
 
-/* The query below creates new tables that contain data about the actions of non-motorists (people involved that weren't inside a car) 
-that may have contributed to the incident. Just like before, I executed the query for each year by replacing '2017' in the 
-FROM and CREATE TABLE statements with subsequent years. */
+/* The query below clones the public tables into my project that contain data about the actions of non-motorists 
+(people involved that weren't inside a car) that may have contributed to the incident. Just like before, I executed 
+the query for each year by replacing '2017' in the FROM and CREATE TABLE statements with subsequent years. */
 
 CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_2017 AS
@@ -135,8 +142,9 @@ SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_2019
 UNION ALL
 SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_2020;
 
-/* The query below creates new tables that contain data about the obstacles drivers attempted to avoid. Just like before, 
-I executed the query for each year by replacing '2017' in the FROM and CREATE TABLE statements with subsequent years. */
+/* The query below clones the public tables into my project that contain data about the obstacles drivers attempted 
+to avoid. Just like before, I executed the query for each year by replacing '2017' in the FROM and CREATE TABLE 
+statements with subsequent years. */
 
 CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_2017 AS
@@ -517,7 +525,7 @@ WHERE
   (day_of_the_month NOT BETWEEN 1 AND 31) OR 
   (day_of_week NOT BETWEEN 1 AND 7) OR 
   (num_vehicles_involved < 1 ) OR 
-  (number_of_fatalities < 0) OR 
+  (number_of_fatalities < 1) OR 
   (number_of_drunk_drivers < 0);
 
 /* The query below checks for any invalid 'day_of_the_month' values depending on the month. It also accounts for 
@@ -571,7 +579,7 @@ WHERE
 categories, so I decided to consolidate them with a CASE statement as shown below and put them in a new table titled 
 'distract_all_v2' that will contain the clean data. */
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.distract_all_v2 AS
 SELECT
   incident_id,
@@ -608,7 +616,7 @@ WHERE
 were many specific categories, so I decided to consolidate them with a CASE statement as shown below and put them in a 
 new table titled 'nmactions_all_v2' that will contain the clean data. */
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.nmactions_all_v2 AS
 SELECT
   incident_id,
@@ -652,7 +660,7 @@ WHERE
 duplicates, so I decided to consolidate them with a CASE statement as shown below and put them in a new table titled 
 'drimpair_all_v2' that will contain the clean data. */
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.drimpair_all_v2 AS 
 SELECT
   incident_id,
@@ -685,7 +693,7 @@ WHERE
 duplicates, so I decided to consolidate them with a CASE statement as shown below and put them in a new table titled 
 'obstacles_all_v2' that will contain the clean data. */
 
-CREATE OR REPLACE TABLE
+CREATE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.obstacles_all_v2 AS 
 SELECT
   incident_id,
@@ -708,5 +716,8 @@ WHERE
   incident_id IS NULL OR 
   vehicle_number < 1;
 
+/* At this point, all the data is clean and ready for analysis. I will connect to my BigQuery account within Tableau and extract 
+the tables to analyze the data. 
 
+The links to my visualizations are in the README file in this repository. */ 
 
