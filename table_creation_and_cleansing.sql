@@ -72,7 +72,7 @@ CREATE OR REPLACE TABLE
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS
 SELECT
   a.*,
-  p._2020_pop AS state_population
+  p.2020_pop AS state_population
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS a
 INNER JOIN
