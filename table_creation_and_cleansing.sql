@@ -36,8 +36,8 @@ SELECT
   manner_of_collision_name AS collision_manner,
   relation_to_junction_specific_location_name AS junction_type,
 
-    /* The 'work_zone_name' column displays the type of workers present, but I only wanted to know whether or not there were 
-    any workers present at all, so I used a CASE statement to create a column showing this. */
+  /* After looking at DISTINCT values for 'work_zone_name', I learned it displays the type of workers present, but I only 
+  wanted to know whether or not there were any workers present at all, so I used a CASE statement to create a column showing this. */
   CASE
     WHEN work_zone_name = 'None' THEN 'False'
     WHEN work_zone_name IS NULL THEN 'Unknown'
