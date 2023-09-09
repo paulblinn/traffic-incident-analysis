@@ -78,7 +78,7 @@ FROM
 INNER JOIN
   us-traffic-incidents-analysis.nhtsa_data_tables.states_pop AS p
 ON
-  a.state = p.state
+  a.state = p.state;
 
 /* I created a new duplicate table of 'accidents_all' so that I could clean and transform the data without
 modifying the original table. */
@@ -90,7 +90,7 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all;
 
-/* To get an overview of how the data is formatted, I queried all the columns and the first 100 rows. */
+/* To get an overview of how the data was formatted, I queried all the columns and the first 100 rows. */
 
 SELECT
   *
@@ -136,7 +136,8 @@ SELECT
   junction_type,
   is_work_zone,
   lighting_conditions,
-  weather
+  weather,
+  state_population
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
@@ -193,7 +194,8 @@ SELECT
   junction_type,
   is_work_zone,
   lighting_conditions,
-  weather
+  weather,
+  state_population
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
@@ -303,7 +305,8 @@ Another Motor Vehicle In Transport',
   junction_type,
   is_work_zone,
   lighting_conditions,
-  weather
+  weather,
+  state_population
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
@@ -343,7 +346,8 @@ SELECT
   END AS junction_type,
   is_work_zone,
   lighting_conditions,
-  weather
+  weather,
+  state_population
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
@@ -380,7 +384,8 @@ SELECT
     WHEN lighting_conditions IN('Reported as Unknown','Not Reported','Unknown') THEN 'Other'
     ELSE lighting_conditions
   END AS lighting_conditions,
-  weather
+  weather,
+  state_population
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
@@ -418,7 +423,8 @@ SELECT
     WHEN weather IN('Not Reported','Reported as Unknown') THEN 'Unknown'
     WHEN weather = 'Blowing Snow' THEN 'Snow'
     ELSE weather
-  END AS weather
+  END AS weather,
+  state_population
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
