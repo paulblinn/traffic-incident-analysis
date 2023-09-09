@@ -464,7 +464,7 @@ WHERE
   (num_vehicles_involved < 1 ) OR 
   (number_of_fatalities < 1) OR 
   (number_of_drunk_drivers < 0) OR
-  (state_population NOT BETWEEN 550000 AND 40000000);
+  (state_population NOT BETWEEN 570000 AND 39500000);
 
 /* The query below checks for any invalid 'day_of_the_month' values depending on the month. It also accounts for 
 2020 being a leap year. After running it, no columns were returned, which means there are no errors. */
