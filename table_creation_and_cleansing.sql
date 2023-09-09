@@ -429,7 +429,7 @@ FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
 /* The query below checks for any null values in each of the numerical columns in the 'accidents_all_v2' table. 
-After running it, no columns were returned, which means there are no nulls. */
+After running it, no columns were returned, which means there are no null values. */
 
 SELECT
   *
@@ -501,8 +501,8 @@ SELECT
     LIMIT 1
   ) AS latest_date;
 
-/* The query below checks for any null values in 'state','city', and 'county' columns in the 'accidents_all_v2' table. 
-After running it, no columns were returned, which means there are no errors. */
+/* The query below checks for any null values in the remaining columns that I didn't check earlier. After running it, 
+no columns were returned, which means there are no null values. */
 
 SELECT
   *
@@ -511,7 +511,10 @@ FROM
 WHERE
   state IS NULL OR
   city IS NULL OR
-  county IS NULL;
+  county IS NULL OR
+  latitude IS NULL OR
+  longitude IS NULL OR 
+  timestamp_of_crash IS NULL;
 
 /* At this point, all the data is clean and ready for analysis. I will connect to my BigQuery account within Tableau and extract 
 my table to analyze the data. 
