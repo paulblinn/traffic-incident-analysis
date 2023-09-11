@@ -1,7 +1,7 @@
 # Analysis of Fatal Traffic Collisions in the U.S.
 
-For this project, I wanted to identify factors that may contribute to fatal traffic collisions in the U.S. and 
-determine ways to address them. I found a dataset published by the NHTSA in the bigquery-public-data library that 
+For this project, I wanted to identify factors that may contribute to fatal traffic collisions in the United States 
+and determine ways to address them. I found a dataset published by the NHTSA in the bigquery-public-data library that 
 contains data about vehicle collisions where there was at least one death. I chose to limit the scope of my analysis 
 to the years 2017 through 2020 (the latest year available) for this project. 
 
