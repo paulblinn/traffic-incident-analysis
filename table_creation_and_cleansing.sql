@@ -552,5 +552,4 @@ WHERE
 /* At this point, all the data is clean and ready for analysis. I will connect to my BigQuery account within Tableau and extract 
 my table to analyze the data. 
 
-The links to my visualizations are in the README file in this repository. */ 
-
+The links to my Google Slides presentation and Tableau visualizations are in the README file in this repository. */ 
