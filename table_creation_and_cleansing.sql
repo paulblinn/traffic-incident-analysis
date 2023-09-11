@@ -1,5 +1,5 @@
 /* The 'accident_yyyy' tables in the dataset contain general information about each particular incident. Because they are stored in 
-a public data library, I needed to create new tables within my own BigQuery project for further analysis and transformation. 
+a public data library, I needed to create new tables within my own BigQuery project for further cleansing and analysis. 
 
 The query below selects all the columns I chose to analyze from the public tables and places them into new tables within my 
 BigQuery project. Since this dataset stores each year's data in a separate table, I executed the query for each year by 
@@ -75,7 +75,7 @@ INNER JOIN
 ON
   a.state = p.state;
 
-/* I created a new duplicate table of 'accidents_all' so that I could clean and transform the data without
+/* I created a new duplicate table of 'accidents_all' so that I could clean and validate the data without
 modifying the original table. */
 
 CREATE TABLE
