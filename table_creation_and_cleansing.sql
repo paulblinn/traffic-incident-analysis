@@ -1,10 +1,5 @@
-/* For this project, I wanted to determine how to reduce deaths from car collisions and occurrences of incidents. 
-I found a dataset published by the NHTSA in the bigquery-public-data library that contains data about vehicle 
-incidents where there was at least one death. 
-
-The 'accident_yyyy' tables in the dataset contain general information about each particular incident. Because they are stored in 
+/* The 'accident_yyyy' tables in the dataset contain general information about each particular incident. Because they are stored in 
 a public data library, I needed to create new tables within my own BigQuery project for further analysis and transformation. 
-I chose to limit the scope of my analysis to the years 2017 through 2020 (the latest year available) for this project. 
 
 The query below selects all the columns I chose to analyze from the public tables and places them into new tables within my 
 BigQuery project. Since this dataset stores each year's data in a separate table, I executed the query for each year by 
