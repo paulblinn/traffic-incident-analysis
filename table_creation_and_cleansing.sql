@@ -199,6 +199,44 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
+/* When looking at DISTINCT values for the 'population_density' column, there were a few duplicates, so I 
+decided to rewrite the table and consolidate them with a CASE statement as shown below. */
+
+CREATE OR REPLACE TABLE
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2 AS
+SELECT
+  incident_id,
+  state,
+  county,
+  city,
+  num_vehicles_involved,
+  month,
+  day_of_the_month,
+  year,
+  day_of_week,
+  hour,
+  minute,
+  timestamp_of_crash,
+  number_of_fatalities,
+  number_of_drunk_drivers,
+  road_type,
+  CASE
+    WHEN population_density IN('Trafficway Not in State Inventory','Not Reported') THEN 'Unknown'
+    ELSE population_density
+  END AS population_density,
+  latitude,
+  longitude,
+  special_jurisdiction,
+  first_harmful_event,
+  collision_manner,
+  junction_type,
+  is_work_zone,
+  lighting_conditions,
+  weather,
+  state_population
+FROM
+    us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
+
 /* When looking at DISTINCT values for the 'first_harmful_event' column, there were many very specific categories 
 and a few duplicates, so I decided to rewrite the table and consolidate them with a CASE statement as shown below. */
 
