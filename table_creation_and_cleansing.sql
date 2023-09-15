@@ -70,7 +70,7 @@ SELECT
   p.pop_2020 AS state_population
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS a
-INNER JOIN
+LEFT JOIN
   us-traffic-incidents-analysis.nhtsa_data_tables.states_pop AS p
 ON
   a.state = p.state;
