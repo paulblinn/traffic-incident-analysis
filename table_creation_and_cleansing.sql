@@ -1,12 +1,12 @@
 /* The 'accident_yyyy' tables in the dataset contain general information about each particular incident. Because they are stored in 
 a public data library, I needed to create new tables within my own BigQuery project for further cleansing and analysis. 
 
-The query below selects all the columns I chose to analyze from the public tables and places them into new tables within my 
-BigQuery project. Since this dataset stores each year's data in a separate table, I executed the query for each year by 
-replacing '2017' in the FROM and CREATE TABLE statements with the subsequent years. */
+The query below selects all the columns I chose to analyze from the public dataset tables and places them into a new table called 
+'accidents_all' within my own BigQuery project. This public dataset stores each year's data in a separate table, so I needed to 
+combine data from the years 2017 through 2020 into a single table (accidents_all). Check the FROM and WHERE statements to see how 
+I accomplished this. */
 
-CREATE TABLE
-  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2017 AS
+CREATE TABLE us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS
 SELECT 
   consecutive_number AS incident_id,
   state_name AS state,
@@ -31,32 +31,32 @@ SELECT
   manner_of_collision_name AS collision_manner,
   relation_to_junction_specific_location_name AS junction_type,
 
-  /* After looking at DISTINCT values for 'work_zone_name', I learned it displays the type of workers present, but I only 
+  /* After looking at the distinct values for 'work_zone_name', I learned it displays the type of workers present, but I only 
   wanted to know whether or not there were any workers present at all, so I used a CASE statement to create a column showing this. */
+  
   CASE
     WHEN work_zone_name = 'None' THEN 'False'
     WHEN work_zone_name IS NULL THEN 'Unknown'
     ELSE 'True'
   END AS is_work_zone,
   light_condition_name AS lighting_conditions,
-  atmospheric_conditions_name AS weather,
-FROM
-  `bigquery-public-data.nhtsa_traffic_fatalities. accident_2017`
 
-/* Note: The 'atmospheric_conditions_name' column is changed to 'atmospheric_conditions_1_name' in the 'accident_2020' table. 
+  /* The 'atmospheric_conditions_name' column is changed to 'atmospheric_conditions_1_name' in the 'accident_2020' table, so 
+  I used a CASE statement to reference the correct column name when selecting data from the 2020 table. */
   
-The query below uses UNION clauses to combine all the tables created with the query above, making one table that 
-contains incident data for all four years. */
+  CASE
+    WHEN _TABLE_SUFFIX = '2020' THEN atmospheric_conditions_1_name
+    ELSE atmospheric_conditions_name
+  END AS weather,
+
+  /* To combine the 2017 through 2020 tables as mentioned earlier, I used the '*' wildcard character to select all the tables 
+  beginning with ' accident_' (which includes the accident tables for all years in the public dataset). Then, I used _TABLE_SUFFIX 
+  in the WHERE clause to ensure only wildcard values between 2017 and 2020 were included. */
   
-CREATE TABLE 
-  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS
-SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2017
-UNION ALL
-SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2018
-UNION ALL
-SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2019
-UNION ALL
-SELECT * FROM us-traffic-incidents-analysis.nhtsa_data_tables.accidents_2020;
+FROM
+  `bigquery-public-data.nhtsa_traffic_fatalities. accident_*`
+WHERE
+  _TABLE_SUFFIX BETWEEN '2017' AND '2020';
 
 /* I also decided to JOIN a table that contains the population of each state so that I could calculate per capita 
 figures when comparing metrics between states. I used Excel to retrieve a table with 2020 state population data from 
@@ -148,9 +148,12 @@ WHERE
 /* While checking for duplicates, I ran this query and discovered some duplicate categories for the 'collision_manner'. */
 
 SELECT
-  DISTINCT collision_manner
+  collision_manner,
+  COUNT(*) AS count_occurrences
 FROM
-  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
+GROUP BY
+  collision_manner
 
 /* To remove duplicates, I used a CASE statement to replace the duplicate categories for the 'collision_manner' with the 
 corresponding categories that I wanted to keep. I used the CREATE OR REPLACE TABLE statment to replace just the 
@@ -194,7 +197,7 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* When looking at DISTINCT values for the 'population_density' column, there were a few duplicates, so I 
+/* When looking at the distinct values for the 'population_density' column, there were a few duplicates, so I 
 decided to rewrite the table and consolidate them with a CASE statement as shown below. */
 
 CREATE OR REPLACE TABLE
@@ -232,7 +235,7 @@ SELECT
 FROM
     us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* When looking at DISTINCT values for the 'first_harmful_event' column, there were many very specific categories 
+/* When looking at the distinct values for the 'first_harmful_event' column, there were many very specific categories 
 and a few duplicates, so I decided to rewrite the table and consolidate them with a CASE statement as shown below. */
 
 CREATE OR REPLACE TABLE 
@@ -343,7 +346,7 @@ Another Motor Vehicle In Transport',
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* When looking at DISTINCT values for the 'junction_type' column, there were a few duplicates, so I decided 
+/* When looking at the distinct values for the 'junction_type' column, there were a few duplicates, so I decided 
 to rewrite the table and consolidate them with a CASE statement as shown below. */
 
 CREATE OR REPLACE TABLE
@@ -384,7 +387,7 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* When looking at DISTINCT values for the 'lighting_conditions' column, there were a few duplicates, so I decided 
+/* When looking at the distinct values for the 'lighting_conditions' column, there were a few duplicates, so I decided 
 to rewrite the table and consolidate them with a CASE statement as shown below. */
 
 CREATE OR REPLACE TABLE
@@ -422,7 +425,7 @@ SELECT
 FROM
   us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
-/* When looking at DISTINCT values for the 'weather' column, there were a few duplicates, so I decided 
+/* When looking at the distinct values for the 'weather' column, there were a few duplicates, so I decided 
 to rewrite the table and consolidate them with a CASE statement as shown below. */
 
 CREATE OR REPLACE TABLE
@@ -511,28 +514,14 @@ WHERE
   (day_of_the_month > 28 AND month = 2 AND year <> 2020) OR 
   (day_of_the_month > 29 AND month = 2 AND year = 2020);
 
-/* The query below uses subqueries to return the earliest and latest date in the 'timestamp_of_crash' column to 
+/* The query below uses the MIN and MAX functions to return the earliest and latest date in the 'timestamp_of_crash' column to 
 ensure all timestamps are between 2017 and 2020. */
 
 SELECT
-  (
-    SELECT
-      timestamp_of_crash
-    FROM
-      us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
-    ORDER BY
-      timestamp_of_crash ASC
-    LIMIT 1
-  ) AS earliest_date,
-  (
-   SELECT
-      timestamp_of_crash
-    FROM
-      us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2
-    ORDER BY
-      timestamp_of_crash DESC
-    LIMIT 1
-  ) AS latest_date;
+  MIN(timestamp_of_crash) AS earliest_date,
+  MAX(timestamp_of_crash) AS latest_date
+FROM
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all_v2;
 
 /* The query below checks for any null values in the remaining columns that I didn't check earlier. After running it, 
 no columns were returned, which means there are no null values. */
