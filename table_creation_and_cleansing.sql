@@ -51,8 +51,8 @@ SELECT
 
   /* To combine the 2017 through 2020 tables as mentioned earlier, I used the '*' wildcard character to select all the tables 
   beginning with ' accident_' (which includes the accident tables for all years in the public dataset). Then, I used _TABLE_SUFFIX 
-  in the WHERE clause to ensure only wildcard values between 2017 and 2020 were included. I converted the wildcard values with the
-  CAST function to ensure the BETWEEN operator compared the years accurately. */
+  in the WHERE clause to ensure only wildcard values between 2017 and 2020 were included. I converted the wildcard values to 
+  integers with the CAST function to ensure the BETWEEN operator compared the years accurately. */
   
 FROM
   `bigquery-public-data.nhtsa_traffic_fatalities. accident_*`
