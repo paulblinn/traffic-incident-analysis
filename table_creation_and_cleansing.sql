@@ -51,12 +51,13 @@ SELECT
 
   /* To combine the 2017 through 2020 tables as mentioned earlier, I used the '*' wildcard character to select all the tables 
   beginning with ' accident_' (which includes the accident tables for all years in the public dataset). Then, I used _TABLE_SUFFIX 
-  in the WHERE clause to ensure only wildcard values between 2017 and 2020 were included. */
+  in the WHERE clause to ensure only wildcard values between 2017 and 2020 were included. I converted the wildcard values with the
+  CAST function to ensure the BETWEEN operator compared the years accurately. */
   
 FROM
   `bigquery-public-data.nhtsa_traffic_fatalities. accident_*`
 WHERE
-  _TABLE_SUFFIX BETWEEN '2017' AND '2020';
+  CAST(_TABLE_SUFFIX AS INT64) BETWEEN 2017 AND 2020;
 
 /* I also decided to JOIN a table that contains the population of each state so that I could calculate per capita 
 figures when comparing metrics between states. I used Excel to retrieve a table with 2020 state population data from 
