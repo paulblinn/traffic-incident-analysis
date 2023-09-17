@@ -6,7 +6,8 @@ The query below selects all the columns I chose to analyze from the public datas
 combine data from the years 2017 through 2020 into a single table (accidents_all). Check the FROM and WHERE statements to see how 
 I accomplished this. */
 
-CREATE TABLE us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS
+CREATE TABLE
+  us-traffic-incidents-analysis.nhtsa_data_tables.accidents_all AS
 SELECT 
   consecutive_number AS incident_id,
   state_name AS state,
