@@ -147,8 +147,8 @@ FROM
 WHERE
   county LIKE '%(%';
 
-/* While checking for duplicates, I ran this query to view the distinct values for 'collision_manner' and discovered some 
-duplicate categories. */
+/* While checking for duplicates, I ran the query below to view the distinct values for 'collision_manner' and discovered 
+some duplicate categories. */
 
 SELECT
   collision_manner,
