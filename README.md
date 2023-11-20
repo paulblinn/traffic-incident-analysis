@@ -1,4 +1,4 @@
-# Saving Lives on the Road: Strategies to Reduce Fatal Traffic Collisions
+# Strategies to Reduce Fatal Traffic Collisions
 
 For this project, I wanted to identify factors that may contribute to fatal traffic collisions in the United States 
 and determine ways to address them. I found a [dataset published by the NHTSA](https://console.cloud.google.com/marketplace/product/nhtsa-data/nhtsa-traffic-fatalities) in the bigquery-public-data library that 
